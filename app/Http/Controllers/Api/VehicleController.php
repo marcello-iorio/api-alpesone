@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\StoreVehicleRequest;
+use App\Http\Requests\UpdateVehicleRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VehicleResource;
 use App\Models\Vehicle;
@@ -31,7 +32,7 @@ class VehicleController extends Controller
     {
         
         $vehicle = Vehicle::create($request->validated());
-        
+
         return (new VehicleResource($vehicle))
                 ->response()
                 ->setStatusCode(201);
@@ -49,13 +50,17 @@ class VehicleController extends Controller
         return new VehicleResource($vehicle);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Vehicle $vehicle)
+    
+    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
-        // A implementação do 'update' pode ser feita futuramente.
-        return response()->json(['message' => 'Endpoint not implemented yet.'], 501);
+        // A validação é feita automaticamente pelo UpdateVehicleRequest antes de o código chegar aqui.
+        $validatedData = $request->validated();
+
+        // O método update preenche o modelo com os dados validados e salva no banco.
+        $vehicle->update($validatedData);
+
+        // Retornamos o recurso do veículo com os dados já atualizados.
+        return new VehicleResource($vehicle);
     }
 
     /**
