@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\StoreVehicleRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\VehicleResource;
 use App\Models\Vehicle;
@@ -26,10 +27,14 @@ class VehicleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreVehicleRequest $request)
     {
-        // A implementação do 'create' pode ser feita futuramente.
-        return response()->json(['message' => 'Endpoint not implemented yet.'], 501);
+        
+        $vehicle = Vehicle::create($request->validated());
+        
+        return (new VehicleResource($vehicle))
+                ->response()
+                ->setStatusCode(201);
     }
 
     /**
