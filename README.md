@@ -1,61 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# API de Veículos - Desafio Técnico
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este repositório contém o código-fonte de uma API RESTful desenvolvida em Laravel como parte de um desafio técnico. O objetivo do projeto é importar, armazenar e expor dados de veículos a partir de uma API externa, além de configurar a infraestrutura e o deploy em um ambiente AWS.
 
-## About Laravel
+## Tecnologias Utilizadas
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+* **Backend:** PHP 8.2+, Laravel 11+
+* **Banco de Dados:** SQLite
+* **Gerenciador de Dependências:** Composer
+* **Testes:** Pest / PHPUnit
+* **Cliente de API:** Postman
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Configuração do Ambiente de Desenvolvimento
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Siga os passos abaixo para configurar e rodar a aplicação localmente.
 
-## Learning Laravel
+### Pré-requisitos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Certifique-se de que sua máquina de desenvolvimento tenha os seguintes softwares instalados:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+* **PHP:** Versão 8.2 ou superior.
+* **Extensões PHP:** `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `json`, `mbstring`, `openssl`, `pcre`, `pdo`, `tokenizer`, `xml`, `sqlite3`.
+* **Composer:** [Instalador do Composer](https://getcomposer.org/download/).
+* **Node.js e NPM:** [Instalador do Node.js](https://nodejs.org/en).
+* **Git:** Para clonar o repositório.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Passos para Instalação
 
-## Laravel Sponsors
+1.  **Clone o repositório:**
+    ```bash
+    git clone [URL_DO_SEU_REPOSITORIO_GIT]
+    cd [NOME_DA_PASTA_DO_PROJETO]
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2.  **Instale as dependências do PHP:**
+    ```bash
+    composer install
+    ```
 
-### Premium Partners
+3.  **Instale as dependências do Node.js:**
+    ```bash
+    npm install
+    ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4.  **Configure o arquivo de ambiente:**
+    Copie o arquivo de exemplo `.env.example` para um novo arquivo chamado `.env`.
+    ```bash
+    cp .env.example .env
+    ```
 
-## Contributing
+5.  **Gere a chave da aplicação:**
+    ```bash
+    php artisan key:generate
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+6.  **Configure o Banco de Dados (SQLite):**
+    * Crie o arquivo do banco de dados na pasta `database/`:
+        ```bash
+        touch database/database.sqlite
+        ```
+    * Abra o arquivo `.env` e configure a variável `DB_DATABASE` com o caminho **absoluto** para o arquivo que você acabou de criar.
+        ```env
+        DB_CONNECTION=sqlite
+        DB_DATABASE=/caminho/completo/para/seu/projeto/database/database.sqlite
+        ```
 
-## Code of Conduct
+7.  **Execute as Migrations:**
+    Este comando irá criar a estrutura do banco de dados.
+    ```bash
+    php artisan migrate:fresh
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Uso e Execução
 
-## Security Vulnerabilities
+Após a instalação e configuração inicial, você pode interagir com a aplicação da seguinte forma.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Executando a Aplicação Localmente
 
-## License
+Para iniciar o servidor de desenvolvimento do Laravel, execute:
+```bash
+php artisan serve
+```
+Este comando iniciará o servidor local. Por padrão, a API estará acessível em `http://127.0.0.1:8000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Comandos da Aplicação
+
+#### Importação de Dados
+
+Este é o comando principal que busca os dados da API externa e os sincroniza com o banco de dados local.
+
+```bash
+php artisan import:vehicles
+```
+Este comando se conecta à API da Alpes One, baixa os dados dos veículos e os salva/atualiza no banco de dados. Ele utiliza um sistema de cache de 15 minutos para respeitar o limite de acessos da API externa e está agendado para rodar de hora em hora.
+
+### Executando os Testes Automatizados
+
+Para garantir a qualidade e a integridade do código, a aplicação conta com uma suíte de testes automatizados. Para executá-la, rode:
+```bash
+php artisan test
+```
+Este comando executa a suíte completa de testes (Unitários e de Integração). Os testes rodam em um banco de dados SQLite em memória para garantir velocidade e isolamento, sem afetar seu banco de dados principal.
+
+## Documentação da API
+
+### Coleção do Postman
+
+Para facilitar os testes e o uso da API, uma coleção do Postman está incluída neste repositório:
+`postman_collection.json`
+
+Importe este arquivo no seu Postman para ter acesso a todas as requisições prontas para usar.
+
+### Endpoints Disponíveis
+
+| Método | Endpoint | Descrição |
+| :--- | :--- | :--- |
+| `GET` | `/api/vehicles` | Lista todos os veículos de forma paginada. Aceita o parâmetro `?per_page=N`. |
+| `GET` | `/api/vehicles/{id}` | Busca os detalhes de um veículo específico pelo seu ID. |
+| `POST` | `/api/vehicles` | Cria um novo registro de veículo. Requer um corpo (body) em JSON. |
+| `PATCH` | `/api/vehicles/{id}` | Atualiza parcialmente os dados de um veículo existente. Requer um corpo (body) em JSON. |
+| `DELETE` | `/api/vehicles/{id}` | Remove um registro de veículo do banco de dados. |
+
+## Documentação da API
+
+A documentação da API, com todos os endpoints, exemplos de `body` para as requisições, está publicada e pode ser acessada através do link abaixo:
+
+* **[Ver Documentação da API no Postman](https://documenter.getpostman.com/view/1689657/2sB3HeuPUH)**
