@@ -14,26 +14,26 @@ class StoreVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Para o 'create', os campos são 'required' em vez de 'sometimes'
-            'original_id' => 'required|integer|unique:vehicles,original_id',
-            'price' => 'required|numeric|min:0',
-            'km' => 'required|integer|min:0',
-            'year_build' => 'required|digits:4',
-            'year_model' => 'required|digits:4',
-            'new' => 'required|boolean',
-            'board' => 'nullable|string|max:10',
-            'doors' => 'required|integer',
-            'description' => 'nullable|string',
 
-            // Para os relacionamentos, esperamos receber os IDs que já existem no banco
-            'brand_id' => 'required|integer|exists:brands,id',
-            'car_model_id' => 'required|integer|exists:car_models,id',
-            'version_id' => 'required|integer|exists:versions,id',
-            'color_id' => 'required|integer|exists:colors,id',
-            'fuel_id' => 'required|integer|exists:fuels,id',
-            'transmission_id' => 'required|integer|exists:transmissions,id',
-            'unit_id' => 'required|integer|exists:units,id',
-            'status' => 'required|integer',
+            'id' => 'required|integer|unique:vehicles,id',
+            'brand'         => 'required|string|max:255',
+            'model'         => 'required|string|max:255',
+            'version'       => 'required|string|max:255',
+            'color'         => 'required|string|max:255',
+            'fuel'          => 'required|string|max:255',
+            'transmission'  => 'required|string|max:255',
+            'category'      => 'nullable|string|max:255',
+            'sold'          => 'sometimes|boolean', 
+            'year_build'    => 'required|string|max:4',
+            'year_model'    => 'required|string|max:4',
+            'price'         => 'required|numeric|min:0',
+            'km'            => 'required|integer|min:0',
+            'board'         => 'nullable|string|max:10',
+            'doors'         => 'required|integer|min:2|max:5',
+            'description'   => 'nullable|string',
+            'photos'        => 'nullable|array',
+            'optionals'     => 'nullable|array',
+            
         ];
     }
 }

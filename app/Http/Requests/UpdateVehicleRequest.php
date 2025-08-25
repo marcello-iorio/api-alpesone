@@ -14,7 +14,15 @@ class UpdateVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // --- Campos diretos do veículo ---
+            
+            'brand'         => 'sometimes|required|string|max:255',
+            'model'         => 'sometimes|required|string|max:255',
+            'version'       => 'sometimes|required|string|max:255',
+            'color'         => 'sometimes|required|string|max:255',
+            'fuel'          => 'sometimes|required|string|max:255',
+            'transmission'  => 'sometimes|required|string|max:255',
+            'category'      => 'sometimes|nullable|string|max:255',
+            'sold'          => 'sometimes|required|boolean',
             'price'         => 'sometimes|required|numeric|min:0',
             'km'            => 'sometimes|required|integer|min:0',
             'year_build'    => 'sometimes|required|digits:4',
@@ -23,22 +31,8 @@ class UpdateVehicleRequest extends FormRequest
             'board'         => 'sometimes|nullable|string|max:10',
             'doors'         => 'sometimes|required|integer|min:2|max:5',
             'description'   => 'sometimes|nullable|string',
-            'status'        => 'sometimes|required|integer',
-
-            // --- IDs de Relacionamentos ---
-            // A regra 'exists' garante que o ID enviado realmente existe na tabela correspondente.
-            'brand_id'        => 'sometimes|required|integer|exists:brands,id',
-            'car_model_id'    => 'sometimes|required|integer|exists:car_models,id',
-            'version_id'      => 'sometimes|required|integer|exists:versions,id',
-            'color_id'        => 'sometimes|required|integer|exists:colors,id',
-            'fuel_id'         => 'sometimes|required|integer|exists:fuels,id',
-            'transmission_id' => 'sometimes|required|integer|exists:transmissions,id',
-            'unit_id'         => 'sometimes|required|integer|exists:units,id',
-
-            // --- Campos JSON ---
-            // A regra 'array' garante que o valor enviado para estes campos seja uma lista.
-            'photos'          => 'sometimes|nullable|array',
-            'optionals'       => 'sometimes|nullable|array',
+            'photos'        => 'sometimes|nullable|array',
+            'optionals'     => 'sometimes|nullable|array',
         ];
     }
 }

@@ -14,14 +14,13 @@ class VehicleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Carrega os veículos com seus relacionamentos para evitar múltiplas queries
-        $vehicles = Vehicle::with(['brand', 'carModel', 'version', 'color', 'unit'])
-            ->orderBy('original_id', 'asc')
-            ->paginate(15);
+        $perPage = $request->query('per_page', 15);
 
-        // Retorna a coleção formatada pelo VehicleResource
+        $vehicles = Vehicle::orderBy('id', 'asc')
+            ->paginate($perPage); 
+
         return VehicleResource::collection($vehicles);
     }
 
@@ -43,8 +42,6 @@ class VehicleController extends Controller
      */
     public function show(Vehicle $vehicle)
     {
-        // Carrega todos os relacionamentos para a resposta detalhada
-        $vehicle->load(['brand', 'carModel', 'version', 'color', 'unit', 'fuel', 'transmission']);
 
         // Retorna um único recurso formatado
         return new VehicleResource($vehicle);

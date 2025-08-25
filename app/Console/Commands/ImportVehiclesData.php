@@ -1,85 +1,88 @@
 <?php
+
 namespace App\Console\Commands;
 
-use App\Models\{Brand, CarModel, Color, Fuel, Transmission, Unit, Vehicle, Version};
+use App\Models\Vehicle; // O único Model que precisamos agora
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB; // Importar a facade DB
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache; // Importamos o Cache
 
 class ImportVehiclesData extends Command
 {
     protected $signature = 'import:vehicles';
-    protected $description = 'Recebe dados do veículo da fonte e atualiza o banco de dados.
-    ';
-    // Troque a URL pelo arquivo local para desenvolvimento
-    // private const API_URL = 'https://hub.alpes.one/api/v1/integrator/export/1902';
+    protected $description = 'Busca dados da API externa e atualiza o banco de dados local.';
 
-    //Esse json é o substituto da api porque ela está retornando erro 5000
-    private const LOCAL_JSON_PATH = 'storage/app/mock.json'; // Salve o JSON aqui
+    // URL real da API
+    private const API_URL = 'https://hub.alpes.one/api/v1/integrator/export/1902';
 
     public function handle()
     {
-        $this->info('Iniciando importação de dados de veículos...');
+        $this->info('Iniciando importação de dados de veículos via API...');
 
-        // Para desenvolvimento, vamos ler o arquivo local
-        if (!file_exists(storage_path('app/mock.json'))) {
-             $this->error('Arquivo mock.json não encontrado em storage/app/');
-             return 1;
+        // Lógica de Cache para respeitar o rate limit (2x a cada 30 min)
+        // Tentamos lembrar da resposta por 15 minutos.
+        $items = Cache::remember('api_vehicle_data', now()->addMinutes(15), function () {
+            try {
+                $response = Http::get(self::API_URL);
+
+                if (!$response->successful()) {
+                    $this->error('Falha ao acessar a API. Status: ' . $response->status());
+                    Log::error('Falha na API', ['status' => $response->status(), 'body' => $response->body()]);
+                    return null; // Retorna nulo para não salvar nada no cache em caso de erro
+                }
+                
+                // A API retorna um array de objetos diretamente
+                return $response->json();
+
+            } catch (\Exception $e) {
+                $this->error('Erro de conexão com a API: ' . $e->getMessage());
+                Log::error('Erro de conexão com a API: ' . $e->getMessage());
+                return null;
+            }
+        });
+
+        // Se o cache estiver vazio (por falha na requisição), paramos a execução.
+        if (is_null($items)) {
+            $this->error('Não foi possível obter os dados da API. Abortando.');
+            return 1; // Retorna código de erro
         }
-        $jsonData = json_decode(file_get_contents(storage_path('app/mock.json')), true);
-        $items = $jsonData['data'] ?? [];
-
-        // A lógica com HTTP e Cache ficaria aqui para a URL real
 
         $progressBar = $this->output->createProgressBar(count($items));
         $progressBar->start();
 
-        // Usar uma transação para garantir a integridade dos dados
+        // Usamos uma transação para garantir a integridade
         DB::transaction(function () use ($items, $progressBar) {
             foreach ($items as $item) {
-                // Validação básica
+                // Validação básica para garantir que o item tem os dados mínimos
                 if (empty($item['id']) || empty($item['brand'])) {
                     Log::warning('Item inválido pulado:', ['item' => $item]);
                     $progressBar->advance();
                     continue;
                 }
 
-                // 1. Encontra ou cria os registros relacionados
-                $brand = Brand::firstOrCreate(['original_id' => $item['brand']['id']], ['name' => $item['brand']['name']]);
-                $carModel = CarModel::firstOrCreate(['original_id' => $item['model']['id']], ['name' => $item['model']['name']]);
-                $version = Version::firstOrCreate(['original_id' => $item['version']['id']], ['name' => $item['version']['name']]);
-                $color = Color::firstOrCreate(['original_id' => $item['color']['id']], ['name' => $item['color']['name']]);
-                $fuel = Fuel::firstOrCreate(['original_id' => $item['fuel']['id']], ['name' => $item['fuel']['name']]);
-                $transmission = Transmission::firstOrCreate(['original_id' => $item['transmission']['id']], ['name' => $item['transmission']['name']]);
-                $unit = Unit::firstOrCreate(['original_id' => $item['unit']['id']], ['name' => $item['unit']['name']]);
-
-                // 2. Atualiza ou cria o veículo principal
+                // Atualiza ou cria o veículo principal
                 Vehicle::updateOrCreate(
-                    ['original_id' => $item['id']], // Condição
-                    [ // Dados
-                        'brand_id' => $brand->id,
-                        'car_model_id' => $carModel->id,
-                        'version_id' => $version->id,
-                        'color_id' => $color->id,
-                        'fuel_id' => $fuel->id,
-                        'transmission_id' => $transmission->id,
-                        'unit_id' => $unit->id,
-                        'status' => $item['status'],
-                        'year_build' => $item['year_build'],
-                        'year_model' => $item['year_model'],
-                        'new' => $item['new'],
-                        'km' => $item['km'],
-                        'board' => $item['board'],
-                        'doors' => $item['doors'],
-                        'price' => $item['price'],
-                        'description' => $item['description'],
-                        'photos' => $item['photos'],
-                        'optionals' => $item['optionals'],
-                        'portals' => $item['portals'],
-                        'published_portals' => $item['published_portals'],
-                        'stamps' => $item['stamps'],
+                    ['id' => $item['id']], // Condição para encontrar o registro
+                    [ // Dados para mapear
+                        'brand'         => $item['brand'],
+                        'model'         => $item['model'],
+                        'version'       => $item['version'],
+                        'year_build'    => $item['year']['build'],
+                        'year_model'    => $item['year']['model'],
+                        'transmission'  => $item['transmission'],
+                        'km'            => $item['km'],
+                        'price'         => $item['price'],
+                        'color'         => $item['color'],
+                        'fuel'          => $item['fuel'],
+                        'doors'         => $item['doors'],
+                        'board'         => $item['board'],
+                        'description'   => $item['description'],
+                        'sold'          => $item['sold'] === '1', // Converte "1" para true e "0" para false
+                        'category'      => $item['category'] ?? null,
+                        'photos'        => $item['fotos'] ?? [], // Note a mudança de 'photos' para 'fotos'
+                        'optionals'     => $item['optionals'] ?? [],
                     ]
                 );
                 $progressBar->advance();

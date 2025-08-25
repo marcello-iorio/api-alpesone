@@ -1,5 +1,8 @@
 <?php
 
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -18,5 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+         $exceptions->renderable(function (NotFoundHttpException $e, Request $request) {
+            // Se a requisição for para a nossa API...
+            if ($request->is('api/*')) {
+                // ...retorne uma resposta JSON customizada com status 404.
+                return response()->json([
+                    'message' => 'O recurso solicitado não foi encontrado.'
+                ], 404);
+            }
+        });
     })->create();
