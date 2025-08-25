@@ -125,3 +125,21 @@ Importe este arquivo no seu Postman para ter acesso a todas as requisições pro
 A documentação da API, com todos os endpoints, exemplos de `body` para as requisições, está publicada e pode ser acessada através do link abaixo:
 
 * **[Ver Documentação da API no Postman](https://documenter.getpostman.com/view/1689657/2sB3HeuPUH)**
+
+### Agendador de Tarefas (Cron Job)
+
+Para que a importação automática de veículos funcione de hora em hora (`->hourly()`), é necessário configurar um único Cron Job no servidor que hospedará a aplicação. Este Cron Job chama o agendador do Laravel a cada minuto, e o Laravel decide se é a hora certa de executar o comando.
+
+1.  Acesse o seu servidor via SSH.
+
+2.  Abra o editor de Cron Jobs com o comando:
+    ```bash
+    crontab -e
+    ```
+
+3.  Adicione a seguinte linha no final do arquivo, salve e feche:
+    ```cron
+    * * * * * cd /caminho/para/seu/projeto/no/servidor && php artisan schedule:run >> /dev/null 2>&1
+    ```
+
+**Importante:** Lembre-se de substituir `/caminho/para/seu/projeto/no/servidor` pelo caminho real onde sua aplicação será implantada na instância EC2.
