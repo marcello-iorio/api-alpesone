@@ -143,3 +143,146 @@ Para que a importação automática de veículos funcione de hora em hora (`->ho
     ```
 
 **Importante:** Lembre-se de substituir `/caminho/para/seu/projeto/no/servidor` pelo caminho real onde sua aplicação será implantada na instância EC2.
+
+
+---
+
+## Configuração do Servidor de Produção (AWS EC2)
+
+Esta seção detalha os passos para configurar um servidor Ubuntu limpo na AWS para hospedar esta aplicação.
+
+### 1. Acesso ao Servidor
+
+Primeiro, conecte-se à sua instância EC2 recém-criada via SSH:
+```bash
+ssh -i "sua-chave.pem" ubuntu@SEU_IP_PUBLICO
+```
+
+### 2. Instalação das Dependências (Stack LEMP)
+
+Execute os seguintes comandos para atualizar o servidor e instalar Nginx, PHP, Composer e Git.
+
+```bash
+# Atualizar pacotes
+sudo apt update && sudo apt upgrade -y
+
+# Instalar Nginx
+sudo apt install nginx -y
+
+# Instalar PHP 8.3 e extensões necessárias
+sudo apt install php8.3-fpm php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip php8.3-sqlite3 php8.3-intl -y
+
+# Instalar Composer
+curl -sS [https://getcomposer.org/installer](https://getcomposer.org/installer) | sudo php -- --install-dir=/usr/local/bin --filename=composer
+
+# Instalar Git
+sudo apt install git -y
+```
+
+### 3. Deploy e Configuração da Aplicação
+
+Com as dependências instaladas, clone e configure o projeto Laravel.
+
+```bash
+# Navegue até o diretório web e clone o projeto
+cd /var/www
+sudo git clone URL_DO_SEU_REPOSITORIO_GIT api-alpesone
+
+# Entre na pasta do projeto
+cd api-alpesone
+
+# Ajuste o dono e as permissões das pastas
+sudo chown -R $USER:www-data /var/www/api-alpesone
+sudo chmod -R 775 /var/www/api-alpesone/storage
+sudo chmod -R 775 /var/www/api-alpesone/bootstrap/cache
+
+# Instale as dependências do Laravel (sem as de desenvolvimento)
+composer install --no-dev --optimize-autoloader
+
+# Crie e edite o arquivo de ambiente
+cp .env.example .env
+sudo nano .env
+```
+Dentro do arquivo `.env`, configure as seguintes variáveis:
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=http://SEU_IP_PUBLICO
+DB_CONNECTION=sqlite
+DB_DATABASE=/var/www/api-alpesone/database/database.sqlite
+```
+
+```bash
+# Gere a chave da aplicação
+php artisan key:generate
+```
+
+### 4. Configuração do Nginx
+
+Crie um arquivo de configuração do Nginx para o seu site.
+
+```bash
+sudo nano /etc/nginx/sites-available/api-alpesone
+```
+Cole o seguinte conteúdo no arquivo, substituindo `SEU_IP_PUBLICO` pelo IP da sua instância:
+```nginx
+server {
+    listen 80;
+    server_name SEU_IP_PUBLICO;
+    root /var/www/api-alpesone/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-XSS-Protection "1; mode=block";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+Ative o site e reinicie o Nginx para aplicar as configurações:
+```bash
+sudo ln -s /etc/nginx/sites-available/api-alpesone /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### 5. Finalização (Banco de Dados e Agendador)
+
+Por fim, crie o banco de dados, rode as migrations e configure o agendador de tarefas.
+
+```bash
+# Navegue de volta para a pasta do projeto, se necessário
+cd /var/www/api-alpesone
+
+# Crie o arquivo do banco de dados e ajuste as permissões
+sudo touch database/database.sqlite
+sudo chown -R www-data:www-data database/
+sudo chmod -R 664 database/
+
+# Rode as migrations
+php artisan migrate --force
+
+# Rode a importação inicial de dados
+php artisan import:vehicles
+
+# Configure o Cron Job para a importação automática
+sudo crontab -e
+```
+Adicione a seguinte linha no final do arquivo `crontab`:
+```cron
+* * * * * cd /var/www/api-alpesone && php artisan schedule:run >> /dev/null 2>&1
+```
