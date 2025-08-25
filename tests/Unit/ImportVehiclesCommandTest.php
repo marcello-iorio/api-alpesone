@@ -3,8 +3,8 @@
 namespace Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http; // Usamos Http em vez de Storage
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ImportVehiclesCommandTest extends TestCase
@@ -12,68 +12,78 @@ class ImportVehiclesCommandTest extends TestCase
     use RefreshDatabase;
 
     /**
-     * Teste para o "caminho feliz": o comando importa dados válidos com sucesso.
+     * Testa se o comando importa dados válidos de uma resposta HTTP simulada.
      */
-    public function test_imports_data_successfully_from_json(): void
+    public function test_imports_data_successfully_from_http_api(): void
     {
-        // 1. Arrange (Preparar o ambiente)
-        // Criamos um disco de armazenamento falso e um mock.json com 2 veículos válidos.
-        Storage::fake('local');
-        $validJsonData = '{
-            "data": [
-                { "id": 1001, "brand": { "id": 1, "name": "Fiat" }, "model": { "id": 201, "name": "Argo" }, "version": { "id": 101, "name": "1.0" }, "color": { "id": 4, "name": "Branco" }, "fuel": { "id": 5, "name": "Flex" }, "transmission": { "id": 1, "name": "Manual" }, "unit": { "id": 1, "name": "Loja 1" }, "status": 1, "year_build": "2019", "year_model": "2020", "new": false, "km": "45000", "board": "QWE1R23", "doors": "4", "price": 68000.00, "description": "Carro A", "photos": [], "optionals": [], "portals": {}, "published_portals": {}, "stamps": [] },
-                { "id": 1002, "brand": { "id": 2, "name": "Chevrolet" }, "model": { "id": 202, "name": "Onix" }, "version": { "id": 102, "name": "1.0 Turbo" }, "color": { "id": 11, "name": "Preto" }, "fuel": { "id": 5, "name": "Flex" }, "transmission": { "id": 3, "name": "Automatica" }, "unit": { "id": 2, "name": "Loja 2" }, "status": 1, "year_build": "2021", "year_model": "2021", "new": false, "km": "25000", "board": "RTY4U56", "doors": "4", "price": 85000.00, "description": "Carro B", "photos": [], "optionals": [], "portals": {}, "published_portals": {}, "stamps": [] }
+        // 1. Arrange (Preparar)
+        // Simulamos uma resposta de sucesso da API com 2 veículos.
+        // A estrutura do JSON aqui deve ser idêntica à da API real.
+        $fakeApiResponse = [
+            [
+                "id" => 125306, "brand" => "Hyundai", "model" => "CRETA", "version" => "CRETA 16A ACTION",
+                "year" => ["model" => "2025", "build" => "2025"], "doors" => "5", "board" => "JCU2I93",
+                "transmission" => "Automática", "km" => "24208", "description" => "Carro A", "sold" => "0",
+                "category" => "SUV", "price" => "115900.00", "color" => "Branco", "fuel" => "Gasolina",
+                "fotos" => [], "optionals" => []
+            ],
+            [
+                "id" => 126801, "brand" => "GM - Chevrolet", "model" => "TRACKER", "version" => "TRACKER Premier",
+                "year" => ["model" => "2021", "build" => "2021"], "doors" => "5", "board" => "RDX6A56",
+                "transmission" => "Automática", "km" => "61300", "description" => "Carro B", "sold" => "0",
+                "category" => "SUV", "price" => "99900.00", "color" => "Cinza", "fuel" => "Gasolina",
+                "fotos" => [], "optionals" => []
             ]
-        }';
-        Storage::disk('local')->put('mock.json', $validJsonData);
+        ];
 
+        Http::fake([
+            'hub.alpes.one/*' => Http::response($fakeApiResponse, 200)
+        ]);
 
-        // 2. Act (Executar a ação)
-        // Rodamos o comando Artisan e verificamos se ele termina com sucesso (código 0).
+        // 2. Act (Executar)
         $this->artisan('import:vehicles')->assertExitCode(0);
 
-
-        // 3. Assert (Verificar os resultados)
-        // Verificamos se o banco de dados contém o que esperamos.
+        // 3. Assert (Verificar)
         $this->assertDatabaseCount('vehicles', 2);
-        $this->assertDatabaseCount('brands', 2);
         $this->assertDatabaseHas('vehicles', [
-            'original_id' => 1001,
-            'price' => 68000.00,
-            'description' => 'Carro A',
+            'id' => 125306,
+            'brand' => 'Hyundai',
+            'price' => 115900.00
         ]);
     }
 
     /**
-     * Teste de validação: o comando ignora dados inválidos e registra um aviso.
+     * Testa se o comando ignora itens inválidos na resposta da API.
      */
-    public function test_skips_invalid_data_and_logs_warning(): void
+    public function test_skips_invalid_data_from_api(): void
     {
         // 1. Arrange
-        // Criamos um espião (spy) para o sistema de Log.
-        Log::spy();
-        
-        // Criamos um JSON com um item válido e um inválido (faltando a marca).
-        Storage::fake('local');
-        $invalidJsonData = '{
-            "data": [
-                { "id": 1001, "brand": { "id": 1, "name": "Fiat" }, "model": { "id": 201, "name": "Argo" }, "version": { "id": 101, "name": "1.0" }, "color": { "id": 4, "name": "Branco" }, "fuel": { "id": 5, "name": "Flex" }, "transmission": { "id": 1, "name": "Manual" }, "unit": { "id": 1, "name": "Loja 1" }, "status": 1, "year_build": "2019", "year_model": "2020", "new": false, "km": "45000", "board": "QWE1R23", "doors": "4", "price": 68000.00, "description": "Carro A", "photos": [], "optionals": [], "portals": {}, "published_portals": {}, "stamps": [] },
-                { "id": 1003 }
+        Log::spy(); // Prepara o Log para ser "espionado"
+
+        // Simulamos uma resposta com um item válido e um inválido (sem 'id' ou 'brand')
+        $mixedApiResponse = [
+            [
+                "id" => 125306, "brand" => "Hyundai", "model" => "CRETA", "version" => "CRETA 16A ACTION",
+                "year" => ["model" => "2025", "build" => "2025"], "doors" => "5", "board" => "JCU2I93",
+                "transmission" => "Automática", "km" => "24208", "description" => "Carro A", "sold" => "0",
+                "category" => "SUV", "price" => "115900.00", "color" => "Branco", "fuel" => "Gasolina",
+                "fotos" => [], "optionals" => []
+            ],
+            [
+                "model" => "Carro sem ID" // Item inválido
             ]
-        }';
-        Storage::disk('local')->put('mock.json', $invalidJsonData);
-        
-        
+        ];
+
+        Http::fake([
+            'hub.alpes.one/*' => Http::response($mixedApiResponse, 200)
+        ]);
+
         // 2. Act
         $this->artisan('import:vehicles')->assertExitCode(0);
 
-
         // 3. Assert
-        // Apenas o item válido deve ter sido inserido no banco.
-        $this->assertDatabaseCount('vehicles', 1);
-        $this->assertDatabaseMissing('vehicles', ['original_id' => 1003]);
-
-        // Verificamos se o método 'warning' do Log foi chamado.
-        Log::shouldHaveReceived('warning');
+        $this->assertDatabaseCount('vehicles', 1); // Apenas o válido deve ser inserido
+        $this->assertDatabaseMissing('vehicles', ['model' => 'Carro sem ID']); // Garante que o inválido não foi inserido
+        Log::shouldHaveReceived('warning'); // Garante que o erro foi logado
     }
 }

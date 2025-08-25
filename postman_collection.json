@@ -1,0 +1,166 @@
+{
+	"info": {
+		"_postman_id": "0dd1c93c-1953-4bd0-b463-35b3cdb6a487",
+		"name": "API Alpes One",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1689657"
+	},
+	"item": [
+		{
+			"name": "Listar todos os veículos",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/vehicles",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"vehicles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Busca um veículo pelo id",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/vehicles/:vehicle_id",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"vehicles",
+						":vehicle_id"
+					],
+					"variable": [
+						{
+							"key": "vehicle_id",
+							"value": "123456"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cadastrar um novo veículo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 200001,\r\n    \"brand\": \"Exemplo Motors\",\r\n    \"model\": \"Modelo de Teste\",\r\n    \"version\": \"1.0 API Edition\",\r\n    \"year_build\": \"2025\",\r\n    \"year_model\": \"2025\",\r\n    \"km\": 10,\r\n    \"price\": 99999.99,\r\n    \"color\": \"Azul Meia-noite\",\r\n    \"fuel\": \"Elétrico\",\r\n    \"transmission\": \"Automática\",\r\n    \"doors\": 4,\r\n    \"board\": \"API-201\",\r\n    \"category\": \"Veículo de Exemplo\",\r\n    \"description\": \"Este é um veículo de exemplo criado via API para ser usado na coleção do Postman.\",\r\n    \"photos\": [\r\n        \"https://exemplo.com/foto1.jpg\"\r\n    ],\r\n    \"optionals\": [\r\n        \"Teto solar\",\r\n        \"Bancos de couro\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/vehicles",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"vehicles"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Altera os dados do veículo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": 279500.00,\r\n    \"km\": 9600\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/vehicles/:vehicle_id",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"vehicles",
+						":vehicle_id"
+					],
+					"variable": [
+						{
+							"key": "vehicle_id",
+							"value": "123456"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove um veículo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseURL}}/api/vehicles/:vehicle_id",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"vehicles",
+						":vehicle_id"
+					],
+					"variable": [
+						{
+							"key": "vehicle_id",
+							"value": "133030"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
