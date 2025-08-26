@@ -17,7 +17,7 @@ class ValidateJsonPayload
     {
         // Só aplicamos esta lógica para métodos que normalmente enviam um corpo de dados.
         if (in_array($request->method(), ['POST', 'PUT', 'PATCH'])) {
-            // Tentamos decodificar o conteúdo JSON da requisição.
+            
             json_decode($request->getContent());
 
             // Se o último erro de JSON não for "nenhum erro", significa que o JSON é inválido.
