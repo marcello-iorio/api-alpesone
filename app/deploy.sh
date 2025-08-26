@@ -4,7 +4,7 @@
 
 # Substitua com suas informações
 SSH_USER="ubuntu"
-SSH_HOST="56.124.96.178" 
+SSH_HOST="api-marcelloiorio.ddns.net" 
 SSH_KEY="~/.ssh/api-alpesone.pem" # O caminho para sua chave .pem no seu computador
 PROJECT_PATH="/var/www/api-alpesone"
 
