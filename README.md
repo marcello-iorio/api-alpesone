@@ -33,7 +33,7 @@ A aplicação consome dados de veículos de uma API externa, os armazena e os ex
 
 A documentação completa da API, com todos os endpoints e exemplos de uso, foi criada com o Postman e pode ser acessada através do link público abaixo.
 
-* **[Ver Documentação da API no Postman](URL_PÚBLICA_QUE_VOCÊ_GEROU)**
+* **[Ver Documentação da API no Postman](https://documenter.getpostman.com/view/1689657/2sB3HeuPUH#551b2191-ed6d-4522-9475-a6beb163b4c7)**
 
 Alternativamente, para testes práticos, você pode importar a coleção diretamente no seu aplicativo Postman usando o arquivo `api-alpesone.postman_collection.json` que se encontra na raiz deste repositório.
 
