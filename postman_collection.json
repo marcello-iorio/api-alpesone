@@ -8,20 +8,33 @@
 	"item": [
 		{
 			"name": "Listar todos os veículos",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"auth": {
 					"type": "noauth"
 				},
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"price\": 65500\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "{{baseURL}}/api/vehicles",
+					"raw": "{{baseURL}}/api/vehicles/",
 					"host": [
 						"{{baseURL}}"
 					],
 					"path": [
 						"api",
-						"vehicles"
+						"vehicles",
+						""
 					]
 				}
 			},
@@ -95,7 +108,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"price\": 279500.00,\r\n    \"km\": 9600\r\n}",
+					"raw": "{\r\n    \"brand\": \"Honda\",\r\n    \"km\": \"10000000\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -103,15 +116,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/vehicles/:vehicle_id",
-					"protocol": "http",
+					"raw": "{{baseURL}}/api/vehicles/:vehicle_id",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{baseURL}}"
 					],
-					"port": "8000",
 					"path": [
 						"api",
 						"vehicles",
@@ -148,7 +156,7 @@
 					"variable": [
 						{
 							"key": "vehicle_id",
-							"value": "133030"
+							"value": "133032"
 						}
 					]
 				}
@@ -156,11 +164,32 @@
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "baseURL",
-			"value": "",
-			"type": "default"
+			"value": ""
 		}
 	]
 }
