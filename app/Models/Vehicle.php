@@ -10,7 +10,7 @@ class Vehicle extends Model
     use HasFactory;
 
      /**
-     * Informa ao Laravel que a chave primária não é auto-incrementável.
+     * Informa ao Laravel que a chave primária não é auto-incrementável
      * @var bool
      */
     public $incrementing = false;
