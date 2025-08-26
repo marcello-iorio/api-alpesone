@@ -1,0 +1,36 @@
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: Deploy to Production on EC2
+
+# Gatilho: este workflow roda toda vez que houver um push na branch 'main'
+on:
+  push:
+    branches:
+      - main
+
+# Tarefas a serem executadas
+jobs:
+  deploy:
+    # O tipo de máquina virtual que o robô vai usar
+    runs-on: ubuntu-latest
+
+    # Os passos da tarefa
+    steps:
+      # 1. Baixa o código do repositório para a máquina do robô
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Executa os comandos de deploy no servidor EC2 via SSH
+      - name: Deploy to EC2 Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /var/www/api-alpesone
+            git pull origin main
+            composer install --no-dev --optimize-autoloader
+            php artisan optimize:clear
+            php artisan migrate --force
+            sudo systemctl restart php8.3-fpm
+            echo "✅ Deploy finalizado com sucesso!"
