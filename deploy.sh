@@ -6,7 +6,7 @@
 # Substitua com suas informações
 SSH_USER="ubuntu"
 SSH_HOST="api-marcelloiorio.ddns.net" # Ex: 54.123.45.67 
-SSH_KEY="~/caminho/para/sua/chave-api.pem" # O caminho para sua chave .pem no seu computador
+SSH_KEY="~/.ssh/api-alpesone.pem" # O caminho para sua chave .pem no seu computador
 PROJECT_PATH="/var/www/api-alpesone"
 
 # --- MENSAGENS DE LOG ---
