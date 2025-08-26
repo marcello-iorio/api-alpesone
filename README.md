@@ -35,7 +35,7 @@ A documentação completa da API, com todos os endpoints e exemplos de uso, foi 
 
 * **[Ver Documentação da API no Postman](https://documenter.getpostman.com/view/1689657/2sB3HeuPUH#551b2191-ed6d-4522-9475-a6beb163b4c7)**
 
-Alternativamente, para testes práticos, você pode importar a coleção diretamente no seu aplicativo Postman usando o arquivo `api-alpesone.postman_collection.json` que se encontra na raiz deste repositório.
+Alternativamente, para testes práticos, você pode importar a coleção diretamente no seu aplicativo Postman usando o arquivo `postman_collection.json` que se encontra na raiz deste repositório.
 
 ### Endpoints Disponíveis
 
