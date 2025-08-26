@@ -1,288 +1,158 @@
 # API de Veículos - Desafio Técnico
 
-Este repositório contém o código-fonte de uma API RESTful desenvolvida em Laravel como parte de um desafio técnico. O objetivo do projeto é importar, armazenar e expor dados de veículos a partir de uma API externa, além de configurar a infraestrutura e o deploy em um ambiente AWS.
+![Status do Deploy](https://github.com/marcello-iorio/api-alpesone/actions/workflows/deploy.yml/badge.svg)
+[![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4)](https://www.php.net)
+[![Laravel Version](https://img.shields.io/badge/Laravel-11%2B-FF2D20)](https://laravel.com)
 
-## Tecnologias Utilizadas
+## 🎯 Objetivo do Projeto
 
-* **Backend:** PHP 8.2+, Laravel 11+
-* **Banco de Dados:** SQLite
-* **Gerenciador de Dependências:** Composer
-* **Testes:** Pest / PHPUnit
-* **Cliente de API:** Postman
+Este repositório contém o código-fonte de uma API RESTful completa, desenvolvida como parte de um desafio técnico. O objetivo do projeto é demonstrar habilidades de ponta a ponta, desde o desenvolvimento backend com Laravel até a configuração de infraestrutura na nuvem (AWS) e automação de deploy (CI/CD com GitHub Actions).
 
-## Configuração do Ambiente de Desenvolvimento
+A aplicação consome dados de veículos de uma API externa, os armazena e os expõe através de seus próprios endpoints CRUD.
+
+## ✨ Principais Funcionalidades
+
+-   **Importação de Dados Automatizada:** Um comando Artisan que consome uma API externa, respeitando limites de acesso com cache, e sincroniza os dados em um banco de dados local.
+-   **API RESTful Completa:** Endpoints para todas as operações CRUD (Create, Read, Update, Delete) para o recurso de veículos.
+-   **Paginação Dinâmica:** A listagem de veículos é paginada e permite que o cliente defina a quantidade de itens por página via query param (`?per_page=N`).
+-   **Validação Robusta:** Uso de Form Requests para validar todas as entradas de dados na API, com tratamento de erro customizado para respostas em JSON.
+-   **Infraestrutura na Nuvem (IaaS):** Configuração completa de um servidor Ubuntu em uma instância AWS EC2 com stack LEMP (Nginx, PHP-FPM) e HTTPS.
+-   **Deploy Automatizado (CI/CD):** Um pipeline de Integração e Deploy Contínuo com GitHub Actions que atualiza o servidor de produção automaticamente a cada `push` na branch `main`.
+
+## 🛠️ Tecnologias Utilizadas
+
+-   **Backend:** PHP 8.3, Laravel 11
+-   **Banco de Dados:** SQLite
+-   **Servidor:** Nginx
+-   **Infraestrutura:** AWS EC2
+-   **CI/CD:** GitHub Actions
+-   **Testes:** Pest / PHPUnit
+-   **Documentação:** Postman
+
+## 📚 Documentação da API
+
+A documentação completa da API, com todos os endpoints e exemplos de uso, foi criada com o Postman e pode ser acessada através do link público abaixo.
+
+* **[Ver Documentação da API no Postman](URL_PÚBLICA_QUE_VOCÊ_GEROU)**
+
+Alternativamente, para testes práticos, você pode importar a coleção diretamente no seu aplicativo Postman usando o arquivo `api-alpesone.postman_collection.json` que se encontra na raiz deste repositório.
+
+### Endpoints Disponíveis
+
+| Método  | Endpoint                 | Descrição                                                                      |
+| :------ | :----------------------- | :----------------------------------------------------------------------------- |
+| `GET`   | `/api/vehicles`          | Lista todos os veículos de forma paginada. Aceita o parâmetro `?per_page=N`.   |
+| `GET`   | `/api/vehicles/{id}`     | Busca os detalhes de um veículo específico pelo seu ID.                          |
+| `POST`  | `/api/vehicles`          | Cria um novo registro de veículo. Requer um corpo (body) em JSON.                |
+| `PATCH` | `/api/vehicles/{id}`     | Atualiza parcialmente os dados de um veículo existente. Requer um corpo (body) em JSON. |
+| `DELETE`| `/api/vehicles/{id}`     | Remove um registro de veículo do banco de dados.                                 |
+
+## 🚀 Pipeline de Deploy Automatizado (CI/CD)
+
+Este projeto utiliza GitHub Actions para automatizar o processo de deploy.
+-   **Gatilho:** Qualquer `push` para a branch `main`.
+-   **Ações:** O workflow se conecta ao servidor EC2 via SSH e executa o script de deploy, que inclui os seguintes passos:
+    1.  `git pull` para baixar o código mais recente.
+    2.  `composer install` para instalar dependências.
+    3.  `php artisan optimize:clear` para limpar os caches.
+    4.  `php artisan migrate --force` para rodar migrations pendentes.
+    5.  `sudo systemctl restart php8.3-fpm` para aplicar todas as mudanças no código.
+
+---
+
+## 💻 Configuração do Ambiente de Desenvolvimento (Local)
 
 Siga os passos abaixo para configurar e rodar a aplicação localmente.
 
 ### Pré-requisitos
 
-Certifique-se de que sua máquina de desenvolvimento tenha os seguintes softwares instalados:
-
-* **PHP:** Versão 8.2 ou superior.
-* **Extensões PHP:** `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `json`, `mbstring`, `openssl`, `pcre`, `pdo`, `tokenizer`, `xml`, `sqlite3`.
-* **Composer:** [Instalador do Composer](https://getcomposer.org/download/).
-* **Node.js e NPM:** [Instalador do Node.js](https://nodejs.org/en).
-* **Git:** Para clonar o repositório.
+-   PHP 8.2+ e as extensões: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `json`, `mbstring`, `openssl`, `pcre`, `pdo`, `tokenizer`, `xml`, `sqlite3`.
+-   [Composer](https://getcomposer.org/download/)
+-   [Node.js & NPM](https://nodejs.org/en)
+-   Git
 
 ### Passos para Instalação
 
 1.  **Clone o repositório:**
     ```bash
-    git clone [URL_DO_SEU_REPOSITORIO_GIT]
-    cd [NOME_DA_PASTA_DO_PROJETO]
+    git clone URL_DO_SEU_REPOSITORIO_GIT
+    cd NOME_DA_PASTA_DO_PROJETO
     ```
 
-2.  **Instale as dependências do PHP:**
+2.  **Instale as dependências:**
     ```bash
     composer install
-    ```
-
-3.  **Instale as dependências do Node.js:**
-    ```bash
     npm install
     ```
 
-4.  **Configure o arquivo de ambiente:**
-    Copie o arquivo de exemplo `.env.example` para um novo arquivo chamado `.env`.
+3.  **Configure o arquivo de ambiente:**
     ```bash
     cp .env.example .env
-    ```
-
-5.  **Gere a chave da aplicação:**
-    ```bash
     php artisan key:generate
     ```
 
-6.  **Configure o Banco de Dados (SQLite):**
-    * Crie o arquivo do banco de dados na pasta `database/`:
+4.  **Configure o Banco de Dados (SQLite):**
+    * Crie o arquivo do banco de dados:
         ```bash
         touch database/database.sqlite
         ```
-    * Abra o arquivo `.env` e configure a variável `DB_DATABASE` com o caminho **absoluto** para o arquivo que você acabou de criar.
-        ```env
-        DB_CONNECTION=sqlite
-        DB_DATABASE=/caminho/completo/para/seu/projeto/database/database.sqlite
-        ```
+    * No arquivo `.env`, configure a variável `DB_DATABASE` com o caminho **absoluto** para o arquivo.
 
-7.  **Execute as Migrations:**
-    Este comando irá criar a estrutura do banco de dados.
+5.  **Execute as Migrations e a Importação:**
     ```bash
     php artisan migrate:fresh
+    php artisan import:vehicles
     ```
 
-## Uso e Execução
-
-Após a instalação e configuração inicial, você pode interagir com a aplicação da seguinte forma.
-
-### Executando a Aplicação Localmente
-
-Para iniciar o servidor de desenvolvimento do Laravel, execute:
-```bash
-php artisan serve
-```
-Este comando iniciará o servidor local. Por padrão, a API estará acessível em `http://127.0.0.1:8000`.
-
-### Comandos da Aplicação
-
-#### Importação de Dados
-
-Este é o comando principal que busca os dados da API externa e os sincroniza com o banco de dados local.
-
-```bash
-php artisan import:vehicles
-```
-Este comando se conecta à API da Alpes One, baixa os dados dos veículos e os salva/atualiza no banco de dados. Ele utiliza um sistema de cache de 15 minutos para respeitar o limite de acessos da API externa e está agendado para rodar de hora em hora.
-
-### Executando os Testes Automatizados
-
-Para garantir a qualidade e a integridade do código, a aplicação conta com uma suíte de testes automatizados. Para executá-la, rode:
-```bash
-php artisan test
-```
-Este comando executa a suíte completa de testes (Unitários e de Integração). Os testes rodam em um banco de dados SQLite em memória para garantir velocidade e isolamento, sem afetar seu banco de dados principal.
-
-## Documentação da API
-
-### Coleção do Postman
-
-Para facilitar os testes e o uso da API, uma coleção do Postman está incluída neste repositório:
-`postman_collection.json`
-
-Importe este arquivo no seu Postman para ter acesso a todas as requisições prontas para usar.
-
-### Endpoints Disponíveis
-
-| Método | Endpoint | Descrição |
-| :--- | :--- | :--- |
-| `GET` | `/api/vehicles` | Lista todos os veículos de forma paginada. Aceita o parâmetro `?per_page=N`. |
-| `GET` | `/api/vehicles/{id}` | Busca os detalhes de um veículo específico pelo seu ID. |
-| `POST` | `/api/vehicles` | Cria um novo registro de veículo. Requer um corpo (body) em JSON. |
-| `PATCH` | `/api/vehicles/{id}` | Atualiza parcialmente os dados de um veículo existente. Requer um corpo (body) em JSON. |
-| `DELETE` | `/api/vehicles/{id}` | Remove um registro de veículo do banco de dados. |
-
-## Documentação da API
-
-A documentação da API, com todos os endpoints, exemplos de `body` para as requisições, está publicada e pode ser acessada através do link abaixo:
-
-* **[Ver Documentação da API no Postman](https://documenter.getpostman.com/view/1689657/2sB3HeuPUH)**
-
-### Agendador de Tarefas (Cron Job)
-
-Para que a importação automática de veículos funcione de hora em hora (`->hourly()`), é necessário configurar um único Cron Job no servidor que hospedará a aplicação. Este Cron Job chama o agendador do Laravel a cada minuto, e o Laravel decide se é a hora certa de executar o comando.
-
-1.  Acesse o seu servidor via SSH.
-
-2.  Abra o editor de Cron Jobs com o comando:
+6.  **Inicie o servidor:**
     ```bash
-    crontab -e
+    php artisan serve
+    ```
+    A API estará rodando em `http://127.0.0.1:8000`.
+
+## ☁️ Configuração do Servidor de Produção (AWS EC2)
+
+Esta seção resume os passos para configurar um servidor Ubuntu limpo na AWS para hospedar esta aplicação.
+
+1.  **Criar e Acessar a Instância EC2:**
+    -   Lançar uma instância `t3.micro` com Ubuntu Server 24.04 LTS.
+    -   Configurar um Security Group para permitir tráfego nas portas `22 (SSH)`, `80 (HTTP)` e `443 (HTTPS)`.
+    -   Conectar-se via SSH usando o par de chaves gerado.
+
+2.  **Instalar a Stack LEMP e Dependências:**
+    ```bash
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install nginx php8.3-fpm php8.3-sqlite3 php8.3-curl php8.3-xml php8.3-mbstring php8.3-zip php8.3-intl git -y
+    curl -sS [https://getcomposer.org/installer](https://getcomposer.org/installer) | sudo php -- --install-dir=/usr/local/bin --filename=composer
     ```
 
-3.  Adicione a seguinte linha no final do arquivo, salve e feche:
-    ```cron
-    * * * * * cd /caminho/para/seu/projeto/no/servidor && php artisan schedule:run >> /dev/null 2>&1
-    ```
+3.  **Configurar Chave de Deploy (Servidor -> GitHub):**
+    -   Gerar uma chave SSH no servidor com `ssh-keygen`.
+    -   Adicionar a chave pública (`~/.ssh/id_rsa.pub`) às "Deploy Keys" nas configurações do repositório no GitHub.
 
-**Importante:** Lembre-se de substituir `/caminho/para/seu/projeto/no/servidor` pelo caminho real onde sua aplicação será implantada na instância EC2.
+4.  **Fazer o Deploy e Configurar a Aplicação:**
+    -   Clonar o repositório em `/var/www/` usando a URL SSH.
+    -   Ajustar as permissões de arquivo e pasta (`chown`, `chmod`) para os usuários `ubuntu` e `www-data`.
+    -   Rodar `composer install --no-dev`.
+    -   Configurar o arquivo `.env` para produção.
+    -   Rodar `php artisan key:generate`.
 
+5.  **Configurar o Nginx:**
+    -   Criar um arquivo de configuração em `/etc/nginx/sites-available/`.
+    -   Apontar a diretiva `root` para `/var/www/SUA_PASTA/public` e configurar o `fastcgi_pass` para o socket do PHP-FPM.
+    -   Ativar o site criando um link simbólico em `/etc/nginx/sites-enabled/` e reiniciar o Nginx.
+
+6.  **Finalizar e Popular Banco de Dados:**
+    -   Criar o arquivo `database/database.sqlite` com `touch`.
+    -   Ajustar as permissões da pasta e do arquivo para o usuário `www-data`.
+    -   Rodar `php artisan migrate:fresh --force` e `php artisan import:vehicles`.
+
+7.  **Configurar o Agendador de Tarefas (Cron Job):**
+    -   Abrir o editor de cron com `sudo crontab -e`.
+    -   Adicionar a linha para executar o agendador do Laravel a cada minuto:
+        ```cron
+        * * * * * cd /var/www/api-alpesone && php artisan schedule:run >> /dev/null 2>&1
+        ```
 
 ---
-
-## Configuração do Servidor de Produção (AWS EC2)
-
-Esta seção detalha os passos para configurar um servidor Ubuntu limpo na AWS para hospedar esta aplicação.
-
-### 1. Acesso ao Servidor
-
-Primeiro, conecte-se à sua instância EC2 recém-criada via SSH:
-```bash
-ssh -i "sua-chave.pem" ubuntu@SEU_IP_PUBLICO
-```
-
-### 2. Instalação das Dependências (Stack LEMP)
-
-Execute os seguintes comandos para atualizar o servidor e instalar Nginx, PHP, Composer e Git.
-
-```bash
-# Atualizar pacotes
-sudo apt update && sudo apt upgrade -y
-
-# Instalar Nginx
-sudo apt install nginx -y
-
-# Instalar PHP 8.3 e extensões necessárias
-sudo apt install php8.3-fpm php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip php8.3-sqlite3 php8.3-intl -y
-
-# Instalar Composer
-curl -sS [https://getcomposer.org/installer](https://getcomposer.org/installer) | sudo php -- --install-dir=/usr/local/bin --filename=composer
-
-# Instalar Git
-sudo apt install git -y
-```
-
-### 3. Deploy e Configuração da Aplicação
-
-Com as dependências instaladas, clone e configure o projeto Laravel.
-
-```bash
-# Navegue até o diretório web e clone o projeto
-cd /var/www
-sudo git clone URL_DO_SEU_REPOSITORIO_GIT api-alpesone
-
-# Entre na pasta do projeto
-cd api-alpesone
-
-# Ajuste o dono e as permissões das pastas
-sudo chown -R $USER:www-data /var/www/api-alpesone
-sudo chmod -R 775 /var/www/api-alpesone/storage
-sudo chmod -R 775 /var/www/api-alpesone/bootstrap/cache
-
-# Instale as dependências do Laravel (sem as de desenvolvimento)
-composer install --no-dev --optimize-autoloader
-
-# Crie e edite o arquivo de ambiente
-cp .env.example .env
-sudo nano .env
-```
-Dentro do arquivo `.env`, configure as seguintes variáveis:
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=http://SEU_IP_PUBLICO
-DB_CONNECTION=sqlite
-DB_DATABASE=/var/www/api-alpesone/database/database.sqlite
-```
-
-```bash
-# Gere a chave da aplicação
-php artisan key:generate
-```
-
-### 4. Configuração do Nginx
-
-Crie um arquivo de configuração do Nginx para o seu site.
-
-```bash
-sudo nano /etc/nginx/sites-available/api-alpesone
-```
-Cole o seguinte conteúdo no arquivo, substituindo `SEU_IP_PUBLICO` pelo IP da sua instância:
-```nginx
-server {
-    listen 80;
-    server_name SEU_IP_PUBLICO;
-    root /var/www/api-alpesone/public;
-
-    add_header X-Frame-Options "SAMEORIGIN";
-    add_header X-XSS-Protection "1; mode=block";
-    add_header X-Content-Type-Options "nosniff";
-
-    index index.php;
-    charset utf-8;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;
-    }
-
-    location ~ /\.(?!well-known).* {
-        deny all;
-    }
-}
-```
-
-Ative o site e reinicie o Nginx para aplicar as configurações:
-```bash
-sudo ln -s /etc/nginx/sites-available/api-alpesone /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### 5. Finalização (Banco de Dados e Agendador)
-
-Por fim, crie o banco de dados, rode as migrations e configure o agendador de tarefas.
-
-```bash
-# Navegue de volta para a pasta do projeto, se necessário
-cd /var/www/api-alpesone
-
-# Crie o arquivo do banco de dados e ajuste as permissões
-sudo touch database/database.sqlite
-sudo chown -R www-data:www-data database/
-sudo chmod -R 664 database/
-
-# Rode as migrations
-php artisan migrate --force
-
-# Rode a importação inicial de dados
-php artisan import:vehicles
-
-# Configure o Cron Job para a importação automática
-sudo crontab -e
-```
-Adicione a seguinte linha no final do arquivo `crontab`:
-```cron
-* * * * * cd /var/www/api-alpesone && php artisan schedule:run >> /dev/null 2>&1
-```
+**Desenvolvido por Marcello**
