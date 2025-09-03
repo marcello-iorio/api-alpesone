@@ -4,10 +4,6 @@
 [![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4)](https://www.php.net)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11%2B-FF2D20)](https://laravel.com)
 
-URL da API funcionando:
-
-* **[Link para a API hospedada na EC2 da AWS](https://api-marcelloiorio.ddns.net/api/vehicles/)**
-
 
 
 ## 🎯 Objetivo do Projeto
