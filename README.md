@@ -1,4 +1,4 @@
-# API de Veículos - Desafio Técnico
+# API de Veículos
 
 ![Status do Deploy](https://github.com/marcello-iorio/api-alpesone/actions/workflows/deploy.yml/badge.svg)
 [![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4)](https://www.php.net)
@@ -8,7 +8,7 @@
 
 ## 🎯 Objetivo do Projeto
 
-Este repositório contém o código-fonte de uma API RESTful completa, desenvolvida como parte de um desafio técnico. O objetivo do projeto é demonstrar habilidades de ponta a ponta, desde o desenvolvimento backend com Laravel até a configuração de infraestrutura na nuvem (AWS) e automação de deploy (CI/CD com GitHub Actions).
+Este repositório contém o código-fonte de uma API RESTful completa. O objetivo do projeto é demonstrar habilidades de ponta a ponta, desde o desenvolvimento backend com Laravel até a configuração de infraestrutura na nuvem (AWS) e automação de deploy (CI/CD com GitHub Actions).
 
 A aplicação consome dados de veículos de uma API externa, os armazena e os expõe através de seus próprios endpoints CRUD.
 
