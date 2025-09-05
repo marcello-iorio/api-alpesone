@@ -77,8 +77,8 @@ Siga os passos abaixo para configurar e rodar a aplicação localmente.
 
 1.  **Clone o repositório:**
     ```bash
-    git clone URL_DO_SEU_REPOSITORIO_GIT
-    cd NOME_DA_PASTA_DO_PROJETO
+    git clone https://github.com/marcello-iorio/api-alpesone.git
+    cd api-alpesone
     ```
 
 2.  **Instale as dependências:**
