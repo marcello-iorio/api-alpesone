@@ -1,6 +1,6 @@
 # API de Veículos
 
-![Status do Deploy](https://github.com/marcello-iorio/api-alpesone/actions/workflows/deploy.yml/badge.svg)
+
 [![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-777BB4)](https://www.php.net)
 [![Laravel Version](https://img.shields.io/badge/Laravel-11%2B-FF2D20)](https://laravel.com)
 
